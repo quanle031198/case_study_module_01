@@ -1,0 +1,14 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    display:flex;
+    justify-content: center;
+    margin-top:100px;
+}
+#gameCanvas{
+    border: 1px solid orange;
+    background-image: url(../img/city.png);
+    
+}
