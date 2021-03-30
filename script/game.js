@@ -17,10 +17,11 @@ console.log(canvasPosition);
 const mouse = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-    click: false
+   
 }
+
 canvas.addEventListener('mousedown', function (event) {
-    mouse.click = true;
+    
     mouse.x = event.x - canvasPosition.left;
     mouse.y = event.y - canvasPosition.top;
 
@@ -83,8 +84,8 @@ rocketImg.src = 'img/rocket.png';
 class rocket {
     constructor() {
         this.x = canvas.width + 200;
-        this.y = Math.random() * (canvas.height - 150) + 90;
-        this.radius = 40;
+        this.y = Math.random() * canvas.height;
+        this.radius = 30;
         this.speed = Math.random() * 5 + 2;
         this.frame = 0;
     }
@@ -94,7 +95,7 @@ class rocket {
         // ctx.beginPath();
         // ctx.arc(this.x, this.y,this.radius,0,Math.PI * 2);
         // ctx.fill();
-        ctx.drawImage(rocketImg, this.x - 60, this.y - 60, this.radius *3, this.radius * 3)
+        ctx.drawImage(rocketImg, this.x - 60, this.y - 60, this.radius *4, this.radius * 4)
     }
 
     update() {
@@ -102,7 +103,7 @@ class rocket {
         if (this.x < 0 - this.radius * 2) {
             this.x = canvas.width + 200;
             this.y = Math.random() * (canvas.height - 150) + 90;
-            this.speed = Math.random() * 2 + 2;
+            this.speed = Math.random() * 5 + 2;
         }
         // va chạm với player
         const dx = this.x - player.x;
@@ -129,8 +130,10 @@ function handleGameOver() {
 
 //thế lực bóng tối
 const helicoptersArray = [];
+
 const heliImage = new Image();
-heliImage.src = 'img/heli_1.png';
+heliImage.src = 'img/heli_2.png';
+
 
 class Helicopter {
     constructor() {
@@ -164,7 +167,7 @@ heliBoom2.src = 'sound/rumble.flac'
 function handleHelicoters() {
     if (gameFrame % 50 == 0) {
         helicoptersArray.push(new Helicopter());
-
+        
     }
 
     for (let i = 0; i < helicoptersArray.length; i++) {
@@ -172,10 +175,12 @@ function handleHelicoters() {
         helicoptersArray[i].update();
         helicoptersArray[i].draw();
 
-        if (helicoptersArray[i].y < 0 - helicoptersArray[i].radius * 2) {
-            helicoptersArray.splice(i, 1);
-            i--;
-        } else if (helicoptersArray[i].distance < helicoptersArray[i].radius + player.radius) {
+        // if (helicoptersArray[i].y < 0 - helicoptersArray[i].radius * 2) {
+        //     helicoptersArray.splice(i, 1);
+        //     i--;
+        //     score--;
+        // } else 
+        if (helicoptersArray[i].distance < helicoptersArray[i].radius + player.radius) {
 
             if (!helicoptersArray[i].counted) {
                 if (helicoptersArray[i].sound === 'sound1') {
@@ -187,7 +192,9 @@ function handleHelicoters() {
                 helicoptersArray[i].counted = true;
                 helicoptersArray.splice(i, 1);
                 i--;
+                
             }
+            
 
         }
 
@@ -216,7 +223,7 @@ function handleBackground() {
 }
 
 
-//Vòng lặp animation
+// animation
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     handleBackground();
