@@ -5,31 +5,32 @@ canvas.width = 1051;
 canvas.height = 500;
 
 let score = 0;
-let gameFrame = 0;
+let gameFrame = 0; // khung hình
 ctx.font = '50px sans-serif';
 let cloudSpeed = 1;
 gameOver = false;
 
 // Tương tác chuột
 
-let canvasPosition = canvas.getBoundingClientRect();
+let canvasPosition = canvas.getBoundingClientRect(); //cung cấp mọi thông số của canvas
 console.log(canvasPosition);
+//Khởi tạo object theo object literals vị trí xuất hiện ban đầu
 const mouse = {
     x: canvas.width / 2,
     y: canvas.height / 2,
-   
+
 }
 
 canvas.addEventListener('mousedown', function (event) {
-    
+
     mouse.x = event.x - canvasPosition.left;
     mouse.y = event.y - canvasPosition.top;
 
-
+    // console.log(event.x,event.y);
+    // console.log(canvasPosition.left,canvasPosition.top);
+    // console.log(mouse.x,mouse.y);
 });
-canvas.addEventListener('mouseup', function () {
-    mouse.click = false;
-})
+
 
 //player
 
@@ -40,7 +41,7 @@ playerRight.src = 'img/dragon_go_right.png';
 
 class Player {
     constructor() {
-        this.x = canvas.width /2;
+        this.x = canvas.width / 2;
         this.y = canvas.height * 3;
         this.radius = 50;
         this.angle = 0; //xoay nhân vật theo hướng chuột
@@ -51,27 +52,32 @@ class Player {
     update() {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
-        let theta = Math.atan2(dy, dx);
+        let theta = Math.atan2(dy, dx);//trả về số đo góc 
         this.angle = theta
+
         if (mouse.x != this.x) {
-            this.x -= dx / 30; //speed 
+            this.x -= dx / 30;
         }
         if (mouse.y != this.y) {
             this.y -= dy / 30;
         }
     }
     draw() {
-        
+
         ctx.fillStyle = 'red';
-        ctx.save();
+        // ctx.beginPath();
+        // ctx.arc(this.x, this.y,this.radius,0,Math.PI * 2);
+        // ctx.fill();
+
+        ctx.save(); //đẩy trạng thái hiện tại lên trên stack.
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle)
         if (this.x >= mouse.x) {
-            ctx.drawImage(playerLeft, 0 * this.spriteWidth, 0 * this.spriteHeigth, this.spriteWidth - 100, this.spriteHeigth + 183, 0 - 50, 0 - 50, this.spriteWidth / 5, this.spriteHeigth / 3);
+            ctx.drawImage(playerLeft, 0, 0, this.spriteWidth - 100, this.spriteHeigth + 183, -50, -50, this.spriteWidth / 5, this.spriteHeigth / 3);
         } else {
-            ctx.drawImage(playerRight, 0 * this.spriteWidth, 0 * this.spriteHeigth, this.spriteWidth - 100, this.spriteHeigth + 183, 0 - 50, 0 - 50, this.spriteWidth / 5, this.spriteHeigth / 3);
+            ctx.drawImage(playerRight, 0, 0, this.spriteWidth - 100, this.spriteHeigth + 183, -50, -50, this.spriteWidth / 5, this.spriteHeigth / 3);
         }
-        ctx.restore();
+        ctx.restore(); //hiện trạng thái trên cùng trên stack, khôi phục bối cảnh tới trạng thái đó
 
     }
 }
@@ -86,7 +92,7 @@ class rocket {
         this.x = canvas.width + 200;
         this.y = Math.random() * canvas.height;
         this.radius = 30;
-        this.speed = Math.random() * 5 + 2;
+        this.speed = 5 ;
         this.frame = 0;
     }
 
@@ -103,7 +109,7 @@ class rocket {
         if (this.x < 0 - this.radius * 2) {
             this.x = canvas.width + 200;
             this.y = Math.random() * (canvas.height - 150) + 90;
-            this.speed = Math.random() * 5 + 2;
+
         }
         // va chạm với player
         const dx = this.x - player.x;
@@ -128,7 +134,7 @@ function handleGameOver() {
 
 }
 
-//thế lực bóng tối
+//Máy bay chiến đấu
 const helicoptersArray = [];
 
 const heliImage = new Image();
@@ -138,11 +144,11 @@ heliImage.src = 'img/heli_2.png';
 class Helicopter {
     constructor() {
         this.x = Math.random() * canvas.width;
-        this.y = canvas.height ;
+        this.y = canvas.height;
         this.radius = 50;
         this.speed = Math.random() * 2 + 1;
         this.distance;
-        this.counted = false;
+        
         this.sound = Math.random() <= 0.5 ? 'sound1' : 'sound2';
 
     }
@@ -167,19 +173,15 @@ heliBoom2.src = 'sound/rumble.flac'
 function handleHelicoters() {
     if (gameFrame % 50 == 0) {
         helicoptersArray.push(new Helicopter());
-        
+
     }
 
     for (let i = 0; i < helicoptersArray.length; i++) {
-
-        helicoptersArray[i].update();
         helicoptersArray[i].draw();
+        helicoptersArray[i].update();
 
-        // if (helicoptersArray[i].y < 0 - helicoptersArray[i].radius * 2) {
-        //     helicoptersArray.splice(i, 1);
-        //     i--;
-        //     score--;
-        // } else 
+
+
         if (helicoptersArray[i].distance < helicoptersArray[i].radius + player.radius) {
 
             if (!helicoptersArray[i].counted) {
@@ -189,12 +191,11 @@ function handleHelicoters() {
                     heliBoom2.play();
                 }
                 score++;
-                helicoptersArray[i].counted = true;
                 helicoptersArray.splice(i, 1);
-                i--;
-                
+               i--;
+
             }
-            
+
 
         }
 
@@ -228,11 +229,12 @@ function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     handleBackground();
     handleHelicoters();
-    handleRocket()
+    handleRocket();
     player.update();
     player.draw();
     ctx.fillText('score: ' + score, 10, 50);
     gameFrame++;
+
     if (!gameOver) { requestAnimationFrame(animate) };
 }
 animate()
